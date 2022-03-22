@@ -14,23 +14,29 @@
 #define PulsePin 13 //for esp12 use pin 13 (D7)
 #define LedPin 2
 
+#define cpmThreshold1 50
+#define cpmThreshold2 80
+
+
 #define LOG_PERIOD 10
 #define MAX_PERIOD 60
 #define ENTRIES (MAX_PERIOD / LOG_PERIOD)
 
 #define RadmonUpdateInterval 10
 #define DisplayUpdateInterval 10
+#define AlarmUpdateInterval 10
 
 // hardware & services config
 #define SEND_TO_RADMON      false        // CPM will be sent to Radmon.org
 #define PRINT_TO_SERIAL     true
-#define ENABLE_WIFI         false
+#define ENABLE_WIFI         true
 
 //Debug switches
 #define debug_Display            false
-#define debug_Radmon             false
+#define debug_Radmon             true
 #define debug_CPMcalc            true
 #define debug_Startup            true
+#define debug_Alarm            false
 
 const char* ssid     = "Puttyboy";
 const char* WiFipass = "fawakaswa37";
@@ -52,6 +58,7 @@ struct strConfig {
   // bool useBAR = USE_BAR;
   // bool useCelsius = CELSIUS;
   bool debugStartup = debug_Startup;
+  bool debugAlarm = debug_Alarm;
   bool debugDisplay = debug_Display;
   bool debugRadmon = debug_Radmon;
   // bool debugBlynk = debug_Blynk;

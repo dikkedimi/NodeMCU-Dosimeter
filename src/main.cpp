@@ -27,7 +27,7 @@ String generateClientIdFromMac() // Convert the WiFi MAC address to String
 void threadUpdateRadmonCallback() {
 
   if (config.debugRadmon) {
-    Serial.println("\r\nUptime: " + String(uptime) + " Seconds");
+    Serial.print("\r\nUptime: ");Serial.print(uptime);Serial.println(" Seconds");
   }
   if (config.useRM) {
     if (config.debugRadmon) {
@@ -231,8 +231,71 @@ void IRAM_ATTR countPulse()
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
+void Alarm1() {
+  tone(buzzer, 500); // Send 1KHz sound signal...
+  delay(1000);        // ...for 1 sec
+  noTone(buzzer);     // Stop sound...
+  delay(1000);        // ...for 1sec
+}
+
+void Alarm2() {
+  tone(buzzer, 1000); // Send 1KHz sound signal...
+  delay(500);        // ...for .5 sec
+  noTone(buzzer);     // Stop sound...
+  delay(500);        // ...for 1sec
+}
+
+void threadAlarmCallback() {
+  int state;
+  if(readings[0] < cpmThreshold1){
+    state = 0;
+    // return state;
+    if(config.debugAlarm) {
+      Serial.print("alarm state: "); Serial.println(state);
+    }
+  }
+  if(readings[0] >= cpmThreshold1){
+    state = 1;
+    // return state;
+    if(config.debugAlarm) {
+      Serial.print("alarm state: "); Serial.println(state);
+    }
+  }
+  if(readings[0] >= cpmThreshold2){
+    state = 2;
+    // return state;
+    if(config.debugAlarm) {
+      Serial.print("alarm state: "); Serial.println(state);
+    }
+  }
+  switch (state) {
+    case 1: {
+      if(config.debugAlarm) {
+        Serial.print("sounding alarm, state: "); Serial.println(state);
+      }
+      Alarm1();
+      }
+      break;
+    case 2: {
+      if(config.debugAlarm) {
+        Serial.print("sounding alarm, state: "); Serial.println(state);
+      }
+      Alarm2();
+      }
+      break;
+    case 0: {
+      if(config.debugAlarm) {
+        Serial.print("ending alarm, state: "); Serial.println(state);
+      }
+        noTone(buzzer);
+      }
+      break;
+    }
+}
+
 void setup() {
   pinMode(PulsePin, INPUT);
+  pinMode(buzzer, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
@@ -262,10 +325,10 @@ void setup() {
 
   Wire.begin(SDA, SCL);
 
-if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS, false, false)) {
-  Serial.println(F("SSD1306 allocation failed"));
-  // for(;;);
-}
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS, false, false)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    // for(;;);
+  }
   display.ssd1306_command(SSD1306_SETCONTRAST);                   // 0x81
   display.ssd1306_command(0x8F);
   display.clearDisplay();
@@ -274,19 +337,24 @@ if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS, false, false)) {
   threadCurrentLog.enabled = true;
   threadCurrentLog.setInterval(LOG_PERIOD * 1000);
   threadCurrentLog.onRun(threadCurrentLogCallback);
-if(config.useWiFi) {
-  threadUpdateRadmon.enabled = false;
-  // threadUpdateRadmon.setInterval(RadmonUpdateInterval * 1000);
-  // threadUpdateRadmon.onRun(threadUpdateRadmonCallback);
-} else {
-  threadUpdateRadmon.enabled = true;
-  threadUpdateRadmon.setInterval(RadmonUpdateInterval * 1000);
-  threadUpdateRadmon.onRun(threadUpdateRadmonCallback);
-}
+
+  if(config.useWiFi) {
+    threadUpdateRadmon.enabled = false;
+    // threadUpdateRadmon.setInterval(RadmonUpdateInterval * 1000);
+    // threadUpdateRadmon.onRun(threadUpdateRadmonCallback);
+  } else {
+    threadUpdateRadmon.enabled = true;
+    threadUpdateRadmon.setInterval(RadmonUpdateInterval * 1000);
+    threadUpdateRadmon.onRun(threadUpdateRadmonCallback);
+  }
 
   threadUpdateDisplay.enabled = true;
   threadUpdateDisplay.setInterval(DisplayUpdateInterval * 1000);
   threadUpdateDisplay.onRun(threadUpdateDisplayCallback);
+
+  threadAlarm.enabled = true;
+  threadAlarm.setInterval(AlarmUpdateInterval * 10);
+  threadAlarm.onRun(threadAlarmCallback);
 
   attachInterrupt(digitalPinToInterrupt(PulsePin), countPulse, FALLING);
   display.setTextSize(1); // Draw 1X-scale text
@@ -296,6 +364,8 @@ if(config.useWiFi) {
     Serial.println("Setup done.");
   }
 }
+
+
 
 void loop() {
 // Run threads, this makes it all work on time!

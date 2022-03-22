@@ -38,15 +38,15 @@
 
 unsigned long counts[2] = {0, 0}, logs[ENTRIES];
 
-
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // WiFiServer server(1883);
 // WiFiClient wificlient;
 WiFiClient clientGet;
 const int httpGetPort = 80;
-
+const uint8_t buzzer = 15; //buzzer to arduino pin 9
 
 Thread threadCurrentLog = Thread();
 Thread threadUpdateRadmon = Thread();
 Thread threadUpdateDisplay = Thread();
-StaticThreadController<3> threadController (&threadCurrentLog, &threadUpdateRadmon, &threadUpdateDisplay);
+Thread threadAlarm = Thread();
+StaticThreadController<4> threadController (&threadCurrentLog, &threadUpdateRadmon, &threadUpdateDisplay, &threadAlarm);
