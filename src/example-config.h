@@ -14,8 +14,8 @@
 #define PulsePin 13 //for esp12 use pin 13 (D7)
 #define LedPin 2 // doesn't do anything, should it be pin 0?
 
-#define LOG_PERIOD 5 // in seconds
-#define MAX_PERIOD 300 // in seconds
+#define LOG_PERIOD 10 // in seconds
+#define MAX_PERIOD 60 // in seconds
 #define ENTRIES (MAX_PERIOD / LOG_PERIOD)
 
 #define RadmonUpdateInterval 10

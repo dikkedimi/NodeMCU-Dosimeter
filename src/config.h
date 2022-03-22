@@ -14,12 +14,12 @@
 #define PulsePin 13 //for esp12 use pin 13 (D7)
 #define LedPin 2
 
-#define LOG_PERIOD 5
-#define MAX_PERIOD 300
+#define LOG_PERIOD 10
+#define MAX_PERIOD 60
 #define ENTRIES (MAX_PERIOD / LOG_PERIOD)
 
 #define RadmonUpdateInterval 10
-#define DisplayUpdateInterval 1
+#define DisplayUpdateInterval 10
 
 // hardware & services config
 #define SEND_TO_RADMON      false        // CPM will be sent to Radmon.org

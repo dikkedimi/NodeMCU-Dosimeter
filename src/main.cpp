@@ -119,47 +119,46 @@ void threadUpdateRadmonCallback() {
 
 void threadCurrentLogCallback()
 {
-
-    float _cpmMinuteAverage = 0; // dit is het average van de afgelopen minuut (MAX_PERIOD)
-
   // Serial.println("threadCurrentLogCallback");
+  float _cpmMinuteAverage = 0; // dit is het average van de afgelopen minuut (MAX_PERIOD)
+
   for (int _i = ENTRIES - 1; _i > 0; _i--) {
     logs[_i] = logs[_i - 1];
     _cpmMinuteAverage += logs[_i];
-    if(config.debugCPMcalc) {
-  //     Serial.print("_cpmTotal: ");Serial.println(_cpmTotal);
-     Serial.print("_cpmMinuteAverage: ");Serial.println(_cpmMinuteAverage);Serial.print(" _i: ");Serial.println(_i);
-    }
+    // if(config.debugCPMcalc) {
+    //   // Serial.print("_cpmTotal: ");Serial.println(_cpmTotal);
+    //   Serial.print("_cpmMinuteAverage: ");Serial.println(_cpmMinuteAverage);Serial.print(" _i: ");Serial.println(_i);
+    // }
   }
 
-  if(config.debugCPMcalc) {
-    Serial.print("counts[0]");Serial.println(counts[0]);
-  }
+  // if(config.debugCPMcalc) {
+  //   Serial.print("counts[0]");Serial.println(counts[0]);
+  // }
 
   logs[0] = counts[0];
-  if(config.debugCPMcalc) {
-    Serial.print("logs[0]");Serial.println(logs[0]);
-  }
+  // if(config.debugCPMcalc) {
+  //   Serial.print("logs[0]");Serial.println(logs[0]);
+  // }
 
   counts[1] += counts[0];
-  if(config.debugCPMcalc) {
-    Serial.print("counts[1]");Serial.println(counts[1]);
-  }
+  // if(config.debugCPMcalc) {
+  //   Serial.print("counts[1]");Serial.println(counts[1]);
+  // }
 
   counts[0] = 0;
-  if(config.debugCPMcalc) {
-    Serial.print("counts[0]");Serial.print(counts[0]);Serial.print("   counts[1]");Serial.println(counts[1]);
-  }
+  // if(config.debugCPMcalc) {
+  //   Serial.print("counts[0]");Serial.print(counts[0]);Serial.print("   counts[1]");Serial.println(counts[1]);
+  // }
 
   float _cpmTotal = (float)counts[1] / float (millis() / 1000) * 60; // dit is een inter/extrapolatie van het totaal
-   if(config.debugCPMcalc) {
-     Serial.print("_cpmTotal: ");Serial.println(_cpmTotal);
-//     Serial.print("_cpmMinuteAverage: ");Serial.println(_cpmMinuteAverage);
-    }
+//    if(config.debugCPMcalc) {
+//      Serial.print("_cpmTotal: ");Serial.println(_cpmTotal);
+// //     Serial.print("_cpmMinuteAverage: ");Serial.println(_cpmMinuteAverage);
+//     }
    float _dose = _cpmTotal / tubeIndex; // dit is de tube index CPM / 151 = uSv/h
-   if(config.debugCPMcalc) {
-    Serial.print("_dose: ");Serial.println(_dose);
-   }
+   // if(config.debugCPMcalc) {
+   //  Serial.print("_dose: ");Serial.println(_dose);
+   // }
   readings[0] = _cpmTotal;
   readings[1] = _cpmMinuteAverage;
   readings[2] = _dose;
@@ -187,13 +186,17 @@ void threadUpdateDisplayCallback() {
     display.setCursor(0, 0);
     display.setFont();
     // display.setTextSize(1);
-    display.print("avg ");display.print(MAX_PERIOD);display.print("s:   ");
+    display.print("avg ");display.print(MAX_PERIOD);display.print("s:     ");
     // _cpmMinuteAverage
-    display.print(readings[0]);display.println("CPM");
+    display.println(readings[0],1);
     // display.setCursor(56, 9);
     // _cpmTotal
     display.print("avg ");display.print(LOG_PERIOD);display.print("s:     ");
-    display.print(readings[1]);display.println("CPM");
+    display.print(readings[1],1);
+    display.setCursor(108, 0);
+    display.println("CPM");
+    display.setCursor(108, 7);
+    display.println("CPM");
 
   }
   // LABEL
